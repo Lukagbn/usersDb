@@ -31,4 +31,16 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+router.post("/auth", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await Users.findOne({ email });
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    if (user.password !== password)
+      return res.status(401).json({ error: "Invalid credentials" });
+    res.json({ message: "Logged in!", user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
