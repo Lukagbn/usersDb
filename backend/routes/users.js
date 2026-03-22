@@ -14,7 +14,17 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { firstName, lastName, email, password, gender } = req.body;
-    const newUser = new Users({ firstName, lastName, email, password, gender });
+    const existingEmail = await Users.findOne({ email });
+    if (existingEmail) {
+      return res.status(409).json({ error: "email already exists!" });
+    }
+    const newUser = new Users({
+      firstName,
+      lastName,
+      email,
+      password,
+      gender,
+    });
     await newUser.save();
     res.status(201).json({ newUser });
   } catch (err) {
